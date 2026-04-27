@@ -1,0 +1,1007 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Automation Capabilities Hub</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    :root {
+      --bg-dark: #0a0e1a;
+      --bg-card: #1a1f2e;
+      --bg-hover: #252b3d;
+      --border: #2d3748;
+      --text-primary: #f9fafb;
+      --text-secondary: #d1d5db;
+      --text-muted: #9ca3af;
+      --accent-blue: #3b82f6;
+      --accent-green: #10b981;
+      --accent-purple: #8b5cf6;
+      --accent-orange: #f59e0b;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+    
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'SF Pro Display', sans-serif;
+      background: linear-gradient(135deg, #0a0e1a 0%, #1a1f2e 100%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+    
+    .app { max-width: 1800px; margin: 0 auto; padding: 24px; }
+    
+    /* Header */
+    .header {
+      text-align: center;
+      padding: 48px 24px;
+      background: rgba(26, 31, 46, 0.8);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      margin-bottom: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .header h1 {
+      font-size: 48px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #f472b6 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    
+    .header p {
+      font-size: 16px;
+      color: var(--text-secondary);
+    }
+
+    /* Search and Filters */
+    .controls {
+      background: rgba(26, 31, 46, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+
+    .search-bar {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      pointer-events: none;
+      opacity: 0.5;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 14px 20px 14px 48px;
+      background: rgba(31, 41, 55, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: var(--text-primary);
+      font-size: 15px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .search-input:focus {
+      background: rgba(31, 41, 55, 0.8);
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-muted);
+    }
+
+    .filters-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .filter-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .filter-select {
+      padding: 10px 14px;
+      background: rgba(31, 41, 55, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: var(--text-primary);
+      font-size: 14px;
+      outline: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-select:hover {
+      background: rgba(31, 41, 55, 0.8);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .filter-select:focus {
+      border-color: rgba(59, 130, 246, 0.5);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .results-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .results-count {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .clear-filters {
+      padding: 8px 16px;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 8px;
+      color: #f87171;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .clear-filters:hover {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: rgba(239, 68, 68, 0.5);
+    }
+
+    /* No Results */
+    .no-results {
+      text-align: center;
+      padding: 80px 20px;
+      background: rgba(26, 31, 46, 0.5);
+      border-radius: 16px;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    .no-results-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      opacity: 0.3;
+    }
+
+    .no-results-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .no-results-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .no-results-btn {
+      padding: 10px 20px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 8px;
+      color: var(--accent-blue);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .no-results-btn:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.5);
+    }
+    
+    /* Department Grid */
+    .dept-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    
+    .dept-card {
+      background: rgba(26, 31, 46, 0.7);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 24px;
+      transition: all 0.3s ease;
+    }
+    
+    .dept-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+    
+    .dept-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    
+    .dept-icon {
+      font-size: 32px;
+      width: 56px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--dept-color-1) 0%, var(--dept-color-2) 100%);
+    }
+    
+    .dept-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+    
+    .dept-count {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    
+    /* Category Section */
+    .category {
+      margin-bottom: 20px;
+    }
+    
+    .category-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+    
+    /* Capability Item */
+    .capability {
+      background: rgba(31, 41, 55, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      border-radius: 10px;
+      padding: 14px 16px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+    }
+    
+    .capability:hover {
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateX(4px);
+    }
+    
+    .capability-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+    
+    .capability-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+      display: none;
+    }
+    
+    .capability:hover .capability-desc {
+      display: block;
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    /* Modal/Detail Panel */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      animation: fadeIn 0.2s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    .modal {
+      background: rgba(17, 24, 39, 0.95);
+      backdrop-filter: blur(30px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      max-width: 700px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: slideUp 0.3s ease;
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .modal-header {
+      padding: 32px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 8px;
+    }
+
+    .modal-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: rgba(31, 41, 55, 0.8);
+      color: var(--text-secondary);
+      font-size: 20px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+    }
+
+    .close-btn:hover {
+      background: rgba(59, 130, 246, 0.2);
+      border-color: rgba(59, 130, 246, 0.4);
+      color: var(--text-primary);
+    }
+
+    .modal-body {
+      padding: 32px;
+    }
+
+    .modal-section {
+      margin-bottom: 32px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    /* AI Tools Grid */
+    .tools-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .tool-card {
+      background: rgba(31, 41, 55, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+    }
+
+    .tool-card:hover {
+      background: rgba(31, 41, 55, 0.8);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .tool-info {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+    }
+
+    .tool-icon {
+      font-size: 24px;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .tool-name {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .tool-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .status-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      white-space: nowrap;
+    }
+
+    .status-enabled {
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .status-disabled {
+      background: rgba(100, 116, 139, 0.15);
+      color: #94a3b8;
+      border: 1px solid rgba(100, 116, 139, 0.3);
+    }
+
+    .doc-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #ffffff;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border: 1px solid rgba(59, 130, 246, 0.5);
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .doc-link:hover {
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+      border-color: rgba(59, 130, 246, 0.8);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 8px; }
+    ::-webkit-scrollbar-track { background: rgba(31, 41, 55, 0.5); }
+    ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.5); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(100, 116, 139, 0.7); }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useMemo } = React;
+
+    // AI TOOLS DATABASE
+    // enabled: true/false - Is this tool available enterprise-wide?
+    // docUrl: Link to integration documentation
+    const AI_TOOLS = [
+      { id: 1, name: "ChatGPT Enterprise", icon: "🤖", category: "General AI", enabled: true, docUrl: "https://docs.company.com/ai-tools/chatgpt" },
+      { id: 2, name: "Claude", icon: "🧠", category: "General AI", enabled: true, docUrl: "https://docs.company.com/ai-tools/claude" },
+      { id: 3, name: "Microsoft Copilot", icon: "💼", category: "Productivity", enabled: true, docUrl: "https://docs.company.com/ai-tools/copilot" },
+      { id: 4, name: "Google Gemini", icon: "✨", category: "General AI", enabled: false, docUrl: "" },
+      { id: 5, name: "Augment Code", icon: "⚡", category: "Development", enabled: true, docUrl: "https://docs.company.com/ai-tools/augment" },
+      { id: 6, name: "GitHub Copilot", icon: "🐙", category: "Development", enabled: true, docUrl: "https://docs.company.com/ai-tools/github-copilot" },
+      { id: 7, name: "Power BI AI", icon: "📊", category: "Analytics", enabled: true, docUrl: "https://docs.company.com/ai-tools/powerbi" },
+      { id: 8, name: "Tableau AI", icon: "📈", category: "Analytics", enabled: false, docUrl: "" },
+      { id: 9, name: "Azure AI", icon: "☁️", category: "Cloud AI", enabled: true, docUrl: "https://docs.company.com/ai-tools/azure-ai" },
+      { id: 10, name: "Snowflake Cortex", icon: "❄️", category: "Data Platform", enabled: true, docUrl: "https://docs.company.com/ai-tools/snowflake" },
+      { id: 11, name: "Salesforce Einstein", icon: "⚡", category: "CRM", enabled: false, docUrl: "" },
+      { id: 12, name: "HubSpot AI", icon: "🎯", category: "Marketing", enabled: true, docUrl: "https://docs.company.com/ai-tools/hubspot" },
+      { id: 13, name: "Jasper AI", icon: "✍️", category: "Content", enabled: false, docUrl: "" },
+      { id: 14, name: "Grammarly Business", icon: "📝", category: "Writing", enabled: true, docUrl: "https://docs.company.com/ai-tools/grammarly" },
+      { id: 15, name: "Figma AI", icon: "🎨", category: "Design", enabled: false, docUrl: "" },
+    ];
+
+    // CAPABILITIES DATA from CSV
+    const CAPABILITIES_DATA = [
+      { department: "Human Resources", category: "Talent Acquisition", capability: "Candidate sourcing", description: "AI sourcing from LinkedIn, resumes, databases" },
+      { department: "Human Resources", category: "Talent Acquisition", capability: "Resume screening", description: "Automated resume parsing and ranking" },
+      { department: "Human Resources", category: "Employee Experience", capability: "Onboarding workflows", description: "Automated onboarding checklists and comms" },
+      { department: "Human Resources", category: "Employee Experience", capability: "Employee sentiment analysis", description: "Analyze surveys, Slack, email tone" },
+      { department: "Human Resources", category: "People Ops", capability: "Policy management", description: "Auto-generate and update HR policies" },
+      { department: "Finance", category: "Planning", capability: "Revenue forecasting", description: "Predict revenue using historical + external data" },
+      { department: "Finance", category: "Operations", capability: "Invoice processing", description: "OCR + classification + routing" },
+      { department: "Accounting", category: "Close Process", capability: "Account reconciliation", description: "Auto-match transactions and flag anomalies" },
+      { department: "Accounting", category: "Compliance", capability: "Audit preparation", description: "Auto-compile audit trails and docs" },
+      { department: "Software Engineering", category: "Development", capability: "Code writing", description: "Assist engineers with code generation" },
+      { department: "Software Engineering", category: "QA", capability: "Automated test generation", description: "Generate unit/integration tests" },
+      { department: "Software Engineering", category: "DevOps", capability: "Pipeline automation", description: "Optimize and manage CI/CD pipelines" },
+      { department: "Software Engineering", category: "Maintenance", capability: "Bug detection", description: "AI-assisted debugging and root cause analysis" },
+      { department: "Tech Ops", category: "Infrastructure", capability: "System monitoring", description: "Detect anomalies in infra metrics" },
+      { department: "Tech Ops", category: "Security", capability: "Security monitoring", description: "Detect unusual access or threats" },
+      { department: "Tech Ops", category: "Support", capability: "Incident triage", description: "Auto-prioritize and route incidents" },
+      { department: "Product Management", category: "Discovery", capability: "User research synthesis", description: "Summarize interviews and feedback" },
+      { department: "Product Management", category: "Planning", capability: "Roadmap generation", description: "Suggest prioritization based on data" },
+      { department: "Product Management", category: "Execution", capability: "PRD drafting", description: "Auto-generate product requirement docs" },
+      { department: "Design/UX", category: "Research", capability: "User testing analysis", description: "Summarize usability tests" },
+      { department: "Design/UX", category: "Design", capability: "Wireframe generation", description: "Generate UI layouts from prompts" },
+      { department: "Design/UX", category: "Content", capability: "Microcopy generation", description: "Generate UX copy variations" },
+      { department: "Data Engineering", category: "Pipelines", capability: "Data pipeline automation", description: "Build/optimize pipelines" },
+      { department: "Data Engineering", category: "Quality", capability: "Data quality checks", description: "Detect anomalies and missing data" },
+      { department: "Reporting", category: "Analytics", capability: "Dashboard generation", description: "Auto-create dashboards from queries" },
+      { department: "Reporting", category: "Insights", capability: "Insight generation", description: "Auto-explain trends and anomalies" },
+      { department: "Strategy", category: "Market Intelligence", capability: "Competitive analysis", description: "Analyze competitors and market trends" },
+      { department: "Strategy", category: "Planning", capability: "Scenario simulation", description: "Model business scenarios" },
+      { department: "Account Management", category: "Client Ops", capability: "Client reporting", description: "Auto-generate reports" },
+      { department: "Account Management", category: "Engagement", capability: "Client communication", description: "Draft emails and updates" },
+      { department: "Business Development", category: "Lead Gen", capability: "Lead identification", description: "Find and qualify leads" },
+      { department: "Business Development", category: "Outreach", capability: "Outreach personalization", description: "Personalized outreach emails" },
+      { department: "Copywriting", category: "Content", capability: "Ad copy generation", description: "Generate ad variants" },
+      { department: "Copywriting", category: "Content", capability: "SEO optimization", description: "Optimize content for search" },
+      { department: "Copywriting", category: "Content", capability: "Content editing", description: "Rewrite and improve tone" },
+      { department: "Legal", category: "Contracts", capability: "Contract analysis", description: "Summarize and flag risks" },
+      { department: "Legal", category: "Compliance", capability: "Regulatory monitoring", description: "Track regulatory changes" },
+      { department: "Performance Marketing", category: "Acquisition", capability: "Campaign optimization", description: "Optimize bids and targeting" },
+      { department: "Performance Marketing", category: "Creative", capability: "Creative testing", description: "Generate/test ad creatives" },
+      { department: "Performance Marketing", category: "Analytics", capability: "Attribution modeling", description: "Optimize attribution models" },
+      { department: "Sales", category: "Pipeline", capability: "CRM automation", description: "Update and manage CRM entries" },
+      { department: "Sales", category: "Enablement", capability: "Sales coaching", description: "Analyze calls and suggest improvements" },
+      { department: "Sales", category: "Forecasting", capability: "Sales forecasting", description: "Predict deal outcomes" },
+      { department: "Customer Support", category: "Support Ops", capability: "Chatbots", description: "Automate responses" },
+      { department: "Customer Support", category: "Quality", capability: "Support QA", description: "Analyze support quality" },
+      { department: "Customer Support", category: "Insights", capability: "Customer insights", description: "Extract themes from tickets" },
+    ];
+
+    // DEPARTMENT METADATA
+    const DEPT_META = {
+      "Human Resources": { icon: "👥", colors: ["#8b5cf6", "#a78bfa"] },
+      "Finance": { icon: "💰", colors: ["#10b981", "#34d399"] },
+      "Accounting": { icon: "📊", colors: ["#22c55e", "#4ade80"] },
+      "Software Engineering": { icon: "⚡", colors: ["#f59e0b", "#fbbf24"] },
+      "Tech Ops": { icon: "🔧", colors: ["#ef4444", "#f87171"] },
+      "Product Management": { icon: "📋", colors: ["#3b82f6", "#60a5fa"] },
+      "Design/UX": { icon: "🎨", colors: ["#a855f7", "#c084fc"] },
+      "Data Engineering": { icon: "🗄️", colors: ["#06b6d4", "#22d3ee"] },
+      "Reporting": { icon: "📈", colors: ["#14b8a6", "#2dd4bf"] },
+      "Strategy": { icon: "🎯", colors: ["#ec4899", "#f472b6"] },
+      "Account Management": { icon: "🤝", colors: ["#8b5cf6", "#a78bfa"] },
+      "Business Development": { icon: "📈", colors: ["#6366f1", "#818cf8"] },
+      "Copywriting": { icon: "✍️", colors: ["#d946ef", "#e879f9"] },
+      "Legal": { icon: "⚖️", colors: ["#f97316", "#fb923c"] },
+      "Performance Marketing": { icon: "🚀", colors: ["#06b6d4", "#22d3ee"] },
+      "Sales": { icon: "💼", colors: ["#10b981", "#34d399"] },
+      "Customer Support": { icon: "🎧", colors: ["#eab308", "#facc15"] },
+    };
+
+    // MAIN APP COMPONENT
+    function AIAutomationHub() {
+      const [selectedCapability, setSelectedCapability] = useState(null);
+      const [searchTerm, setSearchTerm] = useState("");
+      const [filterDepartment, setFilterDepartment] = useState("All");
+      const [filterCategory, setFilterCategory] = useState("All");
+      const [sortBy, setSortBy] = useState("department");
+
+      // Get all unique departments and categories
+      const departments = useMemo(() => {
+        return ["All", ...new Set(CAPABILITIES_DATA.map(c => c.department))].sort();
+      }, []);
+
+      const categories = useMemo(() => {
+        const cats = new Set(CAPABILITIES_DATA.map(c => c.category));
+        return ["All", ...Array.from(cats)].sort();
+      }, []);
+
+      // Filter capabilities
+      const filteredCapabilities = useMemo(() => {
+        return CAPABILITIES_DATA.filter(cap => {
+          // Search filter
+          if (searchTerm) {
+            const search = searchTerm.toLowerCase();
+            const matchesSearch =
+              cap.department.toLowerCase().includes(search) ||
+              cap.category.toLowerCase().includes(search) ||
+              cap.capability.toLowerCase().includes(search) ||
+              cap.description.toLowerCase().includes(search);
+            if (!matchesSearch) return false;
+          }
+
+          // Department filter
+          if (filterDepartment !== "All" && cap.department !== filterDepartment) {
+            return false;
+          }
+
+          // Category filter
+          if (filterCategory !== "All" && cap.category !== filterCategory) {
+            return false;
+          }
+
+          return true;
+        });
+      }, [searchTerm, filterDepartment, filterCategory]);
+
+      // Sort capabilities
+      const sortedCapabilities = useMemo(() => {
+        const sorted = [...filteredCapabilities];
+
+        switch (sortBy) {
+          case "department":
+            sorted.sort((a, b) => a.department.localeCompare(b.department));
+            break;
+          case "category":
+            sorted.sort((a, b) => a.category.localeCompare(b.category));
+            break;
+          case "capability":
+            sorted.sort((a, b) => a.capability.localeCompare(b.capability));
+            break;
+          default:
+            break;
+        }
+
+        return sorted;
+      }, [filteredCapabilities, sortBy]);
+
+      // Group capabilities by department and category
+      const departmentData = useMemo(() => {
+        const grouped = {};
+
+        sortedCapabilities.forEach(cap => {
+          if (!grouped[cap.department]) {
+            grouped[cap.department] = {};
+          }
+          if (!grouped[cap.department][cap.category]) {
+            grouped[cap.department][cap.category] = [];
+          }
+          grouped[cap.department][cap.category].push(cap);
+        });
+
+        return grouped;
+      }, [sortedCapabilities]);
+
+      const handleCapabilityClick = (capability) => {
+        setSelectedCapability(capability);
+      };
+
+      const clearFilters = () => {
+        setSearchTerm("");
+        setFilterDepartment("All");
+        setFilterCategory("All");
+        setSortBy("department");
+      };
+
+      const hasActiveFilters = searchTerm || filterDepartment !== "All" || filterCategory !== "All" || sortBy !== "department";
+
+      return (
+        <div className="app">
+          {/* Header */}
+          <header className="header">
+            <h1>AI Automation Capabilities Hub</h1>
+            <p>
+              {CAPABILITIES_DATA.length} capabilities across {departments.length - 1} departments •
+              {AI_TOOLS.length} AI tools available
+            </p>
+          </header>
+
+          {/* Search and Filters */}
+          <div className="controls">
+            {/* Search Bar */}
+            <div className="search-bar">
+              <span className="search-icon">🔍</span>
+              <input
+                type="text"
+                className="search-input"
+                placeholder="Search capabilities, departments, categories, or descriptions..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </div>
+
+            {/* Filters */}
+            <div className="filters-row">
+              <div className="filter-group">
+                <label className="filter-label">Department</label>
+                <select
+                  className="filter-select"
+                  value={filterDepartment}
+                  onChange={(e) => setFilterDepartment(e.target.value)}
+                >
+                  {departments.map(dept => (
+                    <option key={dept} value={dept}>{dept}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label className="filter-label">Category</label>
+                <select
+                  className="filter-select"
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                >
+                  {categories.map(cat => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="filter-group">
+                <label className="filter-label">Sort By</label>
+                <select
+                  className="filter-select"
+                  value={sortBy}
+                  onChange={(e) => setSortBy(e.target.value)}
+                >
+                  <option value="department">Department</option>
+                  <option value="category">Category</option>
+                  <option value="capability">Capability Name</option>
+                </select>
+              </div>
+            </div>
+
+            {/* Results Bar */}
+            <div className="results-bar">
+              <div className="results-count">
+                {filteredCapabilities.length} of {CAPABILITIES_DATA.length} capabilities
+                {Object.keys(departmentData).length > 0 && ` • ${Object.keys(departmentData).length} departments`}
+              </div>
+              {hasActiveFilters && (
+                <button className="clear-filters" onClick={clearFilters}>
+                  ✕ Clear Filters
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Department Grid or No Results */}
+          {Object.keys(departmentData).length === 0 ? (
+            <div className="no-results">
+              <div className="no-results-icon">🔍</div>
+              <div className="no-results-title">No capabilities found</div>
+              <div className="no-results-text">
+                Try adjusting your search or filters to find what you're looking for
+              </div>
+              <button className="no-results-btn" onClick={clearFilters}>
+                Clear all filters
+              </button>
+            </div>
+          ) : (
+            <div className="dept-grid">
+              {Object.keys(departmentData).sort().map(deptName => {
+                const dept = departmentData[deptName];
+                const meta = DEPT_META[deptName];
+                const totalCapabilities = Object.values(dept).flat().length;
+
+                return (
+                  <div
+                    key={deptName}
+                    className="dept-card"
+                    style={{
+                      '--dept-color-1': meta.colors[0],
+                      '--dept-color-2': meta.colors[1],
+                    }}
+                  >
+                    <div className="dept-header">
+                      <div className="dept-icon">{meta.icon}</div>
+                      <div>
+                        <div className="dept-name">{deptName}</div>
+                        <div className="dept-count">{totalCapabilities} capabilities</div>
+                      </div>
+                    </div>
+
+                    {Object.keys(dept).map(categoryName => (
+                      <div key={categoryName} className="category">
+                        <div className="category-title">{categoryName}</div>
+                        {dept[categoryName].map((cap, idx) => (
+                          <div
+                            key={idx}
+                            className="capability"
+                            onClick={() => handleCapabilityClick(cap)}
+                          >
+                            <div className="capability-name">{cap.capability}</div>
+                            <div className="capability-desc">{cap.description}</div>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Modal */}
+          {selectedCapability && (
+            <CapabilityModal
+              capability={selectedCapability}
+              onClose={() => setSelectedCapability(null)}
+              tools={AI_TOOLS}
+            />
+          )}
+        </div>
+      );
+    }
+
+    // CAPABILITY MODAL COMPONENT
+    function CapabilityModal({ capability, onClose, tools }) {
+      const deptMeta = DEPT_META[capability.department];
+
+      const handleOverlayClick = (e) => {
+        if (e.target === e.currentTarget) {
+          onClose();
+        }
+      };
+
+      // Separate enabled and disabled tools
+      const enabledTools = tools.filter(t => t.enabled);
+      const disabledTools = tools.filter(t => !t.enabled);
+
+      return (
+        <div className="modal-overlay" onClick={handleOverlayClick}>
+          <div className="modal">
+            <div className="modal-header">
+              <button className="close-btn" onClick={onClose}>×</button>
+              <div className="modal-title">{capability.capability}</div>
+              <div className="modal-subtitle">
+                {deptMeta.icon} {capability.department} • {capability.category}
+              </div>
+            </div>
+
+            <div className="modal-body">
+              {/* Description */}
+              <div className="modal-section">
+                <div className="section-title">Description</div>
+                <p style={{ fontSize: '14px', color: 'var(--text-secondary)', lineHeight: '1.6' }}>
+                  {capability.description}
+                </p>
+              </div>
+
+              {/* Enabled AI Tools */}
+              {enabledTools.length > 0 && (
+                <div className="modal-section">
+                  <div className="section-title">✅ Enabled AI Tools ({enabledTools.length})</div>
+                  <div className="tools-grid">
+                    {enabledTools.map(tool => (
+                      <div key={tool.id} className="tool-card">
+                        <div className="tool-info">
+                          <div className="tool-icon">{tool.icon}</div>
+                          <div>
+                            <div className="tool-name">{tool.name}</div>
+                            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                              {tool.category}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="tool-actions">
+                          <span className="status-badge status-enabled">Enabled</span>
+                          <a
+                            href={tool.docUrl}
+                            className="doc-link"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            📖 View Docs
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Disabled AI Tools */}
+              {disabledTools.length > 0 && (
+                <div className="modal-section">
+                  <div className="section-title">⚪ Not Available ({disabledTools.length})</div>
+                  <div className="tools-grid">
+                    {disabledTools.map(tool => (
+                      <div key={tool.id} className="tool-card" style={{ opacity: 0.6 }}>
+                        <div className="tool-info">
+                          <div className="tool-icon" style={{ opacity: 0.5 }}>{tool.icon}</div>
+                          <div>
+                            <div className="tool-name">{tool.name}</div>
+                            <div style={{ fontSize: '12px', color: 'var(--text-muted)', marginTop: '2px' }}>
+                              {tool.category}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="tool-actions">
+                          <span className="status-badge status-disabled">Not Available</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Usage Instructions */}
+              <div className="modal-section">
+                <div className="section-title">Getting Started</div>
+                <div style={{
+                  background: 'rgba(59, 130, 246, 0.1)',
+                  border: '1px solid rgba(59, 130, 246, 0.3)',
+                  borderRadius: '12px',
+                  padding: '16px',
+                  fontSize: '13px',
+                  color: 'var(--text-secondary)',
+                  lineHeight: '1.6'
+                }}>
+                  <strong style={{ color: 'var(--accent-blue)', display: 'block', marginBottom: '8px' }}>
+                    💡 How to use enabled tools
+                  </strong>
+                  1. Select an enabled AI tool from the list above<br/>
+                  2. Click "📖 View Docs" to see integration guide<br/>
+                  3. Follow setup instructions for your use case<br/>
+                  4. Start automating this capability!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // RENDER
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<AIAutomationHub />);
+  </script>
+</body>
+</html>
